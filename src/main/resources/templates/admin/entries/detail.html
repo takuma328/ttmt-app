@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout(~{::content})}">
+
+<div th:fragment="content">
+
+  <h1>エントリー詳細</h1>
+
+  <p>ID: <span th:text="${entry.id}"></span></p>
+  <p>代表者: <span th:text="${entry.contactName}"></span></p>
+  <p>メール: <span th:text="${entry.contactEmail}"></span></p>
+  <p>電話番号: <span th:text="${entry.phone}"></span></p>
+
+  <h2>メンバー</h2>
+
+  <table border="1">
+      <tr>
+          <th>名前</th>
+          <th>所属</th>
+          <th>性別</th>
+      </tr>
+
+      <tr th:each="m : ${entry.members}">
+          <td th:text="${m.name}"></td>
+          <td th:text="${m.affiliation}"></td>
+          <td th:text="${m.gender}"></td>
+      </tr>
+  </table>
+
+  <p>
+    <a th:href="@{/admin/entries(eventId=${entry.event.id})}">一覧へ戻る</a>
+  </p>
+
+</div>
+
+</html>

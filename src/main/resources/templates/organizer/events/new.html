@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>大会作成</title>
+
+    <style>
+        /* スタイルは今のままで完璧なので省略していません */
+        body { font-family: "Segoe UI", sans-serif; background-color: #f5f7fa; padding: 30px; }
+        h2 { margin-bottom: 25px; color: #333; }
+        form { background: #fff; max-width: 600px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        form > div, form > input, form > select { margin-bottom: 16px; }
+        label { font-weight: 600; display: block; margin-bottom: 6px; color: #555; }
+        input, select { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        #team-size { background: #f7f9fc; padding: 15px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 20px; }
+        .button-group { margin-top: 30px; display: flex; gap: 15px; }
+        button { background-color: #3498db; color: #fff; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #2980b9; }
+        .btn-cancel { background-color: #95a5a6; color: #fff; text-decoration: none; padding: 12px 25px; border-radius: 4px; font-weight: bold; }
+        .btn-cancel:hover { background-color: #7f8c8d; }
+    </style>
+
+    <script>
+        function onTypeChange() {
+            const type = document.getElementById("type").value;
+            const teamDiv = document.getElementById("team-size");
+            teamDiv.style.display = (type === "TEAM") ? "block" : "none";
+        }
+        window.onload = () => onTypeChange();
+    </script>
+</head>
+<body>
+
+<h2>大会作成</h2>
+
+<form th:action="@{/organizer/events}" th:object="${event}" method="post">
+
+    <label>大会名 <span style="color:red">*</span></label>
+    <input type="text" th:field="*{name}" placeholder="例：春季卓球大会" required />
+
+    <label>開催日 <span style="color:red">*</span></label>
+    <input type="date" th:field="*{date}" required />
+
+    <label>種別</label>
+    <select id="type" th:field="*{type}" onchange="onTypeChange()">
+        <option value="SINGLE">SINGLE (個人戦)</option>
+        <option value="DOUBLE">DOUBLE (ダブルス)</option> <option value="TEAM">TEAM (団体戦)</option>
+    </select>
+
+    <div id="team-size">
+        <label>最小人数 (1チームあたり)</label>
+        <input type="number" th:field="*{teamSizeMin}" placeholder="例：3">
+
+        <label>最大人数 (1チームあたり)</label>
+        <input type="number" th:field="*{teamSizeMax}" placeholder="例：5">
+    </div>
+
+    <label>定員 (チーム数または人数)</label>
+    <input type="number" th:field="*{capacity}" placeholder="例：32">
+
+    <label>締切</label>
+    <input type="datetime-local" th:field="*{deadline}">
+
+    <div class="button-group">
+        <button type="submit">作成する</button>
+        <a th:href="@{/organizer/dashboard}" class="btn-cancel">キャンセルして戻る</a>
+    </div>
+
+</form>
+
+</body>
+</html>

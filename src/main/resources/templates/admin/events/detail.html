@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout(~{::content})}">
+<body>
+
+<h1>大会詳細</h1>
+
+<p>ID：<span th:text="${event.id}"></span></p>
+<p>大会名：<span th:text="${event.name}"></span></p>
+<p>日付：<span th:text="${event.date}"></span></p>
+<p>申込〆切：<span th:text="${event.deadline}"></span></p>
+
+<a th:href="@{/admin/events}">一覧へ</a>
+
+</body>
+</html>

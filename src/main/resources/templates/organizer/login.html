@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主催者ログイン</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 40px; display:flex; justify-content:center; }
+        .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #5a32a3; }
+        .error { color: red; text-align: center; margin-bottom: 10px; }
+        .link { display: block; text-align: center; margin-top: 15px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>主催者ログイン</h2>
+    
+    <div th:if="${param.registered}" style="color: green; text-align: center; margin-bottom: 15px;">
+        登録が完了しました！ログインしてください。
+    </div>
+    <div th:if="${error}" th:text="${error}" class="error"></div>
+
+    <form th:action="@{/organizer/login}" method="post">
+        <label>メールアドレス</label>
+        <input type="text" name="email" required>
+
+        <label>パスワード</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">ログイン</button>
+    </form>
+    
+    <a href="/organizer/signup" class="link">新規登録はこちら</a>
+    <a href="/" class="link">トップページへ戻る</a>
+</div>
+</body>
+</html>

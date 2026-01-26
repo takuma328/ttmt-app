@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:text="${event.name} + ' - 結果速報'"></title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+    /* === 基本設定 === */
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Noto Sans JP', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    /* === ヘッダー === */
+    .page-header { text-align: center; margin-bottom: 30px; color: white; }
+    h2 { font-size: 1.8rem; margin: 0; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .subtitle { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
+
+    /* === ★優勝者バナー === */
+    .champion-banner {
+        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        color: #5d4037; padding: 20px; border-radius: 15px; text-align: center;
+        margin-bottom: 30px; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    .champion-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
+    .champion-name { font-size: 2.5rem; font-weight: 900; margin: 0; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
+    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    /* === タブ切り替えボタン === */
+    .tab-container {
+        display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
+    }
+    .tab-btn {
+        background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5);
+        padding: 10px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.3s;
+    }
+    .tab-btn.active {
+        background: white; color: #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    /* === コンテンツエリア（共通） === */
+    .content-area { display: none; animation: fadeIn 0.5s ease; }
+    .content-area.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* === ① トーナメント表のスタイル === */
+    .tournament-container {
+        background: white; padding: 40px 20px; border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow-x: auto;
+    }
+    .tournament { display: flex; flex-direction: row; gap: 60px; padding-bottom: 20px; min-width: max-content; position: relative; }
+    
+    /* ★★★ SVG線のスタイル（カクカク太線に変更） ★★★ */
+    .connector-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    
+    .connector-line {
+        fill: none;
+        stroke: #cbd5e0; /* 薄いグレー */
+        stroke-width: 3px; /* 少し太く */
+        stroke-linecap: square; /* 端を四角く */
+        stroke-linejoin: miter; /* 角を鋭角に */
+        transition: stroke 0.3s, stroke-width 0.3s;
+    }
+    
+    /* 勝者のルート（強調線） */
+    .connector-line.active {
+        stroke: #e91e63; /* 濃いピンク */
+        stroke-width: 5px; /* ガッツリ太く */
+    }
+
+    .round { display: flex; flex-direction: column; min-width: 240px; position: relative; z-index: 1; }
+    .round-title {
+        text-align: center; font-weight: bold; color: #667eea; margin-bottom: 20px;
+        background: #f0f4ff; padding: 5px 15px; border-radius: 15px; display: inline-block; align-self: center;
+    }
+    .matches-list { display: flex; flex-direction: column; justify-content: space-around; flex-grow: 1; gap: 30px; }
+
+    .match {
+        background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; position: relative;
+    }
+    .match-label {
+        background: #f8fafc; padding: 6px 12px; font-size: 0.7rem; color: #64748b; font-weight: bold;
+        display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9;
+    }
+    .player { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; display: flex; justify-content: space-between; }
+    .player:last-child { border-bottom: none; }
+    .winner { background-color: #fff0f6; color: #e91e63; font-weight: bold; }
+    .winner::after { content: "🏆"; font-size: 1rem; }
+    
+    /* === ② 結果リストのスタイル === */
+    .result-list-container { max-width: 800px; margin: 0 auto; }
+    .result-card {
+        background: white; border-radius: 12px; margin-bottom: 20px; padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between;
+    }
+    .result-round { font-size: 0.8rem; font-weight: bold; color: #999; text-transform: uppercase; margin-bottom: 5px; }
+    .result-match { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 20px; }
+    .result-player { font-size: 1.1rem; font-weight: bold; width: 35%; text-align: center; }
+    .result-player.win { color: #e91e63; }
+    .result-score { font-family: monospace; font-size: 1.2rem; font-weight: bold; background: #eee; padding: 5px 15px; border-radius: 8px; }
+    .no-result { text-align: center; color: rgba(255,255,255,0.8); margin-top: 50px; }
+
+    /* 戻るボタン */
+    .back-btn-container { text-align: center; margin-top: 40px; }
+    .back-btn {
+        display: inline-block; padding: 12px 30px; background: white; color: #667eea;
+        text-decoration: none; border-radius: 30px; font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s;
+    }
+    .back-btn:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+    <h2 th:text="${event.name}">大会名</h2>
+    <div class="subtitle">試合結果速報</div>
+</div>
+
+<div th:if="${champion}" class="champion-banner">
+    <div class="champion-title">GRAND CHAMPION</div>
+    <div class="champion-name" th:text="${champion}">優勝者名</div>
+    <p>優勝おめでとうございます！🎉</p>
+</div>
+
+<div class="tab-container">
+    <button class="tab-btn active" onclick="switchTab('bracket')">🏆 トーナメント表</button>
+    <button class="tab-btn" onclick="switchTab('list')">📝 試合結果一覧</button>
+</div>
+
+<div id="bracket-area" class="content-area active">
+    <div class="tournament-container">
+        <div class="tournament" id="tournament">
+            <svg class="connector-layer" id="connectorSvg"></svg>
+            
+            <div class="round" th:each="roundEntry : ${roundMap}">
+                <div class="round-title" th:text="'Round ' + ${roundEntry.key}"></div>
+
+                <div class="matches-list">
+                    <div class="match" th:each="m : ${roundEntry.value}" th:attr="data-winner=${m.winner}">
+                        <div class="match-label">
+                            <span th:text="'Match ' + ${m.matchNo}">Match 1</span>
+                            <span th:if="${m.score}" style="background:#e91e63; color:white; padding:1px 6px; border-radius:4px; font-size:0.6em;">終了</span>
+                        </div>
+                        <div class="player" th:classappend="${m.winner != null && m.winner == m.playerA} ? 'winner'">
+                            <span th:text="${m.playerA} ?: '（未定）'"></span>
+                        </div>
+                        <div class="player" th:classappend="${m.winner != null && m.winner == m.playerB} ? 'winner'">
+                            <span th:text="${m.playerB} ?: '（未定）'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="list-area" class="content-area">
+    <div class="result-list-container">
+        <div th:each="roundEntry : ${roundMap}">
+            <div th:each="m : ${roundEntry.value}">
+                <div class="result-card" th:if="${m.winner != null}">
+                    <div style="flex-grow: 1;">
+                        <div class="result-round" th:text="'Round ' + ${m.round} + ' - Match ' + ${m.matchNo}"></div>
+                        <div class="result-match">
+                            <div class="result-player" th:classappend="${m.winner == m.playerA} ? 'win'" th:text="${m.playerA}">選手A</div>
+                            <div class="result-score" th:text="${m.score}">3-1</div>
+                            <div class="result-player" th:classappend="${m.winner == m.playerB} ? 'win'" th:text="${m.playerB}">選手B</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="no-result" th:if="${#lists.isEmpty(roundMap)}">
+            <p>まだ試合結果はありません。</p>
+        </div>
+    </div>
+</div>
+
+<div class="back-btn-container">
+    <a th:href="@{'/public/events/' + ${event.id} + '/detail'}" class="back-btn">大会詳細へ戻る</a>
+</div>
+
+<script>
+// タブ切り替え関数
+function switchTab(tabName) {
+    document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabName + '-area').classList.add('active');
+    
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    if(tabName === 'bracket') document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+    else document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+
+    if (tabName === 'bracket') {
+        setTimeout(drawConnectors, 100);
+    }
+}
+
+// 赤線を描画する関数（共通）
+function drawConnectors() {
+    const svg = document.getElementById('connectorSvg');
+    const tournament = document.getElementById('tournament');
+    const rounds = tournament.querySelectorAll('.round');
+    
+    svg.innerHTML = '';
+    svg.setAttribute('width', tournament.scrollWidth);
+    svg.setAttribute('height', tournament.scrollHeight);
+    const box = tournament.getBoundingClientRect();
+    const clean = (str) => str ? str.replace(/\s+/g, '').trim() : "";
+
+    rounds.forEach((round, roundIndex) => {
+        if (roundIndex === rounds.length - 1) return;
+        const matches = round.querySelectorAll('.match');
+        const nextRound = rounds[roundIndex + 1];
+        const nextMatches = nextRound.querySelectorAll('.match');
+        
+        for (let i = 0; i < matches.length; i += 2) {
+            const match1 = matches[i];
+            const match2 = matches[i + 1];
+            const nextMatch = nextMatches[Math.floor(i / 2)];
+            if (!match1 || !nextMatch) continue;
+            
+            const r1 = match1.getBoundingClientRect();
+            const r2 = match2 ? match2.getBoundingClientRect() : r1;
+            const rn = nextMatch.getBoundingClientRect();
+            const x1 = r1.right - box.left;
+            const y1 = r1.top + r1.height / 2 - box.top;
+            const x2 = r2.right - box.left;
+            const y2 = r2.top + r2.height / 2 - box.top;
+            const xn = rn.left - box.left;
+            const yn = rn.top + rn.height / 2 - box.top;
+            const xm = x1 + 30;
+
+            const w1 = clean(match1.getAttribute('data-winner'));
+            const w2 = match2 ? clean(match2.getAttribute('data-winner')) : "";
+            const nextPlayers = nextMatch.querySelectorAll('.player span');
+            const nextNameA = clean(nextPlayers[0].innerText);
+            const nextNameB = clean(nextPlayers[1].innerText);
+
+            const drawPath = (d, active) => {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', d);
+                path.setAttribute('class', active ? 'connector-line active' : 'connector-line');
+                svg.appendChild(path);
+            };
+
+            if (match2) {
+                const active1 = (w1 !== "" && w1 === nextNameA);
+                drawPath(`M ${x1} ${y1} L ${xm} ${y1} L ${xm} ${(y1+y2)/2}`, active1);
+                const active2 = (w2 !== "" && w2 === nextNameB);
+                drawPath(`M ${x2} ${y2} L ${xm} ${y2} L ${xm} ${(y1+y2)/2}`, active2);
+                drawPath(`M ${xm} ${(y1+y2)/2} L ${xn} ${yn}`, active1 || active2);
+            } else {
+                const active1 = (w1 !== "" && w1 === nextNameA);
+                drawPath(`M ${x1} ${y1} L ${xn} ${yn}`, active1);
+            }
+        }
+    });
+}
+
+window.addEventListener('load', drawConnectors);
+window.addEventListener('resize', drawConnectors);
+document.getElementById('tournament').addEventListener('scroll', drawConnectors);
+</script>
+
+</body>
+</html>

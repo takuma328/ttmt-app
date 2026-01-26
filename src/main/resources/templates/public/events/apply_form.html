@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会申込</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .page-header h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-header .event-name {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5em;
+            color: #212529;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-label .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #adb5bd;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: block;
+            margin-top: 6px;
+            animation: shake 0.3s ease;
+        }
+
+        .team-info-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .team-info-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #1565c0;
+        }
+
+        .members-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .member-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease;
+        }
+
+        .member-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .member-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .member-fields {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-remove {
+            background: white;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-remove:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            color: #667eea;
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-add:hover {
+            background: #667eea;
+            color: white;
+            border-style: solid;
+        }
+
+        .btn-add.hidden {
+            display: none;
+        }
+
+        .submit-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-cancel {
+            padding: 18px 32px;
+            background: white;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-cancel:hover {
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 25px 20px;
+            }
+
+            .page-header h2 {
+                font-size: 1.8em;
+            }
+
+            .member-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .submit-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <h2>🏆 大会申込フォーム</h2>
+        <div class="event-name" th:text="${event.name}">サンプル大会</div>
+    </div>
+
+    <div class="form-card">
+        <form th:action="@{'/events/' + ${event.id} + '/apply'}" th:object="${applyForm}" method="post">
+            
+            <input type="hidden" id="eventType" name="type" th:value="${event.type.name()}">
+
+            <div class="section">
+                <div class="section-header">
+                    <span>👤</span>
+                    <span>代表者情報</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">お名前<span class="required">*</span></label>
+                    <input type="text" th:field="*{contactName}" class="form-input" placeholder="山田太郎">
+                    <span th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}" class="error-msg"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">メールアドレス<span class="required">*</span></label>
+                    <input type="email" th:field="*{contactEmail}" class="form-input" placeholder="example@email.com">
+                    <span th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}" class="error-msg"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">電話番号<span class="required">*</span></label>
+                    <input type="text" th:field="*{phone}" class="form-input" placeholder="090-1234-5678">
+                    <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-msg"></span>
+                </div>
+            </div>
+
+            <div th:if="${event.type.name() == 'TEAM'}" class="team-info-box">
+                <h3>🎯 チーム情報</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">チーム名<span class="required">*</span></label>
+                    <input type="text" th:field="*{teamName}" class="form-input" placeholder="例：〇〇高校野球部">
+                    <span th:if="${#fields.hasErrors('teamName')}" th:errors="*{teamName}" class="error-msg"></span>
+                </div>
+
+                <div class="info-note">
+                    <strong>📌 チーム登録について</strong><br>
+                    • このチーム名がトーナメント表に表示されます<br>
+                    • メンバーは <span th:text="${event.teamSizeMin}">2</span>名 ～ <span th:text="${event.teamSizeMax}">10</span>名の間で登録してください
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <span>👥</span>
+                    <span>参加メンバー</span>
+                </div>
+
+                <div th:if="${#fields.hasErrors('members')}" th:errors="*{members}" class="error-msg" style="margin-bottom:15px;"></div>
+
+                <div class="members-section">
+                    <div id="member-body">
+                        <div class="member-card" th:each="member, stat : *{members}">
+                            <div class="member-header">
+                                <div class="member-number" th:text="${stat.count}">1</div>
+                                <button type="button" class="btn-remove" onclick="removeRow(this)">削除</button>
+                            </div>
+                            <div class="member-fields">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">氏名<span class="required">*</span></label>
+                                    <input type="text" th:field="*{members[__${stat.index}__].name}" class="form-input" placeholder="田中一郎">
+                                    <span th:errors="*{members[__${stat.index}__].name}" class="error-msg"></span>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">性別<span class="required">*</span></label>
+                                    <select th:field="*{members[__${stat.index}__].gender}" class="form-input">
+                                        <option value="">選択してください</option>
+                                        <option value="MALE">男性</option>
+                                        <option value="FEMALE">女性</option>
+                                        <option value="OTHER">その他</option>
+                                        <option value="NO_ANSWER">回答しない</option>
+                                    </select>
+                                    <span th:errors="*{members[__${stat.index}__].gender}" class="error-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="add-btn" type="button" class="btn-add" onclick="addMember()">
+                        <span style="font-size: 1.3em;">+</span>
+                        <span>メンバーを追加</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="btn-submit">✓ 申込を確定する</button>
+                <a href="/events" class="btn-cancel">キャンセル</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const isTeam = /*[[${event.type.name() == 'TEAM'}]]*/ false;
+    const minSize = /*[[${event.type.name() == 'TEAM' ? event.teamSizeMin : 1}]]*/ 1;
+    const maxSize = /*[[${event.type.name() == 'TEAM' ? event.teamSizeMax : 99}]]*/ 99;
+
+    let currentIndex = /*[[${applyForm.members.size()}]]*/ 0; 
+    
+    function addMember() {
+        if (currentIndex >= maxSize) {
+            alert("最大人数に達しました");
+            return;
+        }
+
+        const body = document.getElementById("member-body");
+        const card = document.createElement("div");
+        card.className = "member-card";
+
+        let html = `
+            <div class="member-header">
+                <div class="member-number">${currentIndex + 1}</div>
+                <button type="button" class="btn-remove" onclick="removeRow(this)">削除</button>
+            </div>
+            <div class="member-fields">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">氏名<span class="required">*</span></label>
+                    <input type="text" name="members[${currentIndex}].name" class="form-input" placeholder="田中一郎" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">性別<span class="required">*</span></label>
+                    <select name="members[${currentIndex}].gender" class="form-input" required>
+                        <option value="">選択してください</option>
+                        <option value="MALE">男性</option>
+                        <option value="FEMALE">女性</option>
+                        <option value="OTHER">その他</option>
+                        <option value="NO_ANSWER">回答しない</option>
+                    </select>
+                </div>
+            </div>
+        `;
+
+        card.innerHTML = html;
+        body.appendChild(card);
+        currentIndex++;
+        updateButtons();
+    }
+
+    function removeRow(btn) {
+        if (currentIndex <= minSize) {
+            alert(`最低でも ${minSize} 名の登録が必要です。`);
+            return;
+        }
+        btn.closest(".member-card").remove();
+        currentIndex--;
+        reindexRows();
+        updateButtons();
+    }
+
+    function updateButtons() {
+        const addBtn = document.getElementById("add-btn");
+        if (currentIndex >= maxSize) {
+            addBtn.classList.add("hidden");
+        } else {
+            addBtn.classList.remove("hidden");
+        }
+    }
+
+    function reindexRows() {
+        const cards = document.getElementById("member-body").children;
+        currentIndex = 0;
+        Array.from(cards).forEach((card, i) => {
+            card.querySelector('.member-number').innerText = i + 1;
+            card.querySelector('[name$=".name"]').name = `members[${i}].name`;
+            card.querySelector('[name$=".gender"]').name = `members[${i}].gender`;
+            currentIndex++;
+        });
+    }
+
+    window.onload = function() {
+        while (currentIndex < minSize) {
+            addMember();
+        }
+        updateButtons();
+    };
+</script>
+
+</body>
+</html>

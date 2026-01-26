@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主催者ダッシュボード</title>
+
+    <style>
+        /* ... 既存のCSS ... */
+        body { font-family: "Segoe UI", sans-serif; background-color: #f5f7fa; padding: 30px; }
+        h2 { margin-bottom: 10px; color: #333; }
+        .user-info { margin-bottom: 25px; color: #555; font-size: 14px; }
+        
+        nav { margin-bottom: 30px; display: flex; gap: 15px; align-items: center; }
+        
+        .btn-primary {
+            padding: 10px 18px;
+            background-color: #3498db;
+            color: white; text-decoration: none; border-radius: 6px; font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .btn-primary:hover { background-color: #2980b9; }
+
+        .btn-logout {
+            padding: 10px 18px;
+            background-color: #e74c3c; /* 赤色 */
+            color: white; text-decoration: none; border-radius: 6px; font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .btn-logout:hover { background-color: #c0392b; }
+
+        .home-link {
+            display: inline-block; margin-top: 20px; color: #7f8c8d; text-decoration: none;
+        }
+        .home-link:hover { text-decoration: underline; }
+
+        hr { border: none; border-top: 1px solid #ddd; margin: 30px 0; }
+        .info-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); color: #555; }
+    </style>
+</head>
+<body>
+
+<h2>主催者ダッシュボード</h2>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <p class="user-info" th:text="'ログイン中: ' + ${session.organizerName}"></p>
+    <a href="/" class="home-link">← サイトトップへ戻る</a>
+</div>
+
+<nav>
+    <a th:href="@{/organizer/events}" class="btn-primary">大会一覧</a>
+    <a th:href="@{/organizer/events/new}" class="btn-primary">大会作成</a>
+    <a th:href="@{/organizer/logout}" class="btn-logout">ログアウト</a>
+</nav>
+
+<hr>
+
+<div class="info-box">
+    <h3>📢 お知らせ</h3>
+    <p>・大会を作成したら、「詳細」画面からトーナメント表を作成できます。</p>
+    <p>・一般公開する前に、必ず内容を確認してください。</p>
+</div>
+
+</body>
+</html>

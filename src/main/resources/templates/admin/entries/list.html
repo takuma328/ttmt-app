@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>申込一覧</title>
+</head>
+<body>
+
+<h1>申込一覧</h1>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>大会名</th>
+        <th>種別</th>
+        <th>代表者</th>
+        <th>メール</th>
+        <th>電話番号</th>
+        <th>状態</th>
+    </tr>
+
+<tr th:each="entry : ${entries}">
+    <td th:text="${entry.id}"></td>
+    <td th:text="${entry.event.name}"></td>
+    <td th:text="${entry.type}"></td>
+    <td th:text="${entry.contactName}"></td>
+    <td th:text="${entry.contactEmail}"></td>
+    <td th:text="${entry.phone}"></td>
+    <td th:text="${entry.status}"></td>
+</tr>
+
+
+</table>
+
+</body>
+</html>

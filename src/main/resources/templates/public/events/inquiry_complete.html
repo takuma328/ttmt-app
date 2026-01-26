@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>送信完了</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; text-align: center; background: #f4f4f9; }
+        .card { background: white; padding: 40px; border-radius: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2 style="color: green;">送信完了</h2>
+    <p>大会主催者へお問い合わせメールを送信しました。</p>
+    <a th:href="@{'/events/' + ${eventId} + '/apply'}">大会詳細へ戻る</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${event.name} + ' - 参加者一覧'">参加者一覧</title>
+    <style>
+        body { font-family: "Segoe UI", sans-serif; padding: 30px; background-color: #f5f7fa; }
+        h2 { color: #333; margin-bottom: 10px; }
+        
+        .header-info { margin-bottom: 30px; color: #666; }
+        
+        /* テーブル（個人戦用） */
+        table { border-collapse: collapse; width: 100%; max-width: 800px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f0f0f0; }
+
+        /* チームカード（団体戦用） */
+        .team-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 20px;
+            border-top: 4px solid #3498db;
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between; /* 名前とボタンを左右に配置 */
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .team-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .member-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .member-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+            color: #555;
+        }
+        .member-list li:last-child { border-bottom: none; }
+        
+        /* 削除ボタンのスタイル */
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .btn-delete:hover { background-color: #c0392b; }
+
+        .back-link { display: inline-block; margin-top: 20px; color: #3498db; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<h2 th:text="${event.name} + ' - 参加者一覧'"></h2>
+<div class="header-info">
+    開催日： <span th:text="${event.date}"></span> ／ 
+    種別： <span th:text="${event.type}"></span>
+</div>
+
+<div th:if="${event.type.name() != 'TEAM'}">
+    <h3>個人戦 エントリーリスト</h3>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>名前</th>
+            <th>性別</th>
+            <th style="width: 80px;">操作</th> </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${singles}">
+            <td th:text="${m.name}"></td>
+            <td th:text="${m.gender}"></td>
+            <td style="text-align: center;">
+                <form th:action="@{'/organizer/events/' + ${event.id} + '/entries/' + ${m.entry.id} + '/delete'}" method="post">
+                    <button type="submit" class="btn-delete" onclick="return confirm('本当にこの参加者を棄権扱いにしますか？')">棄権</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(singles)}">
+            <td colspan="3">申込はまだありません。</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${event.type.name() == 'TEAM'}">
+    <h3>団体戦 チームリスト</h3>
+    
+    <div class="team-container">
+        <div class="team-card" th:each="team : ${teams}">
+            <div class="team-header">
+                <div class="team-name" th:text="${team.teamName}">チーム名</div>
+                <form th:action="@{'/organizer/events/' + ${event.id} + '/entries/' + ${team.id} + '/delete'}" method="post">
+                    <button type="submit" class="btn-delete" onclick="return confirm('本当にこのチームを棄権扱いにしますか？')">棄権</button>
+                </form>
+            </div>
+            
+            <ul class="member-list">
+                <li th:each="m : ${team.members}">
+                    <span th:text="${m.name}">メンバー名</span>
+                    <span th:if="${m.gender}" th:text="'(' + ${m.gender} + ')'" style="font-size:0.8em; color:#999;"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div th:if="${#lists.isEmpty(teams)}">
+        <p>チームの申込はまだありません。</p>
+    </div>
+</div>
+
+<a th:href="@{'/organizer/events/' + ${event.id} + '/detail'}" class="back-link">← 詳細へ戻る</a>
+
+</body>
+</html>

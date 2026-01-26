@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout(~{::content})}">
+<body>
+
+<h1>大会新規作成</h1>
+
+<form th:action="@{/admin/events/new}" method="post" th:object="${event}">
+    名前：<input type="text" th:field="*{name}"><br>
+    日付：<input type="date" th:field="*{date}"><br>
+    申込〆切：<input type="date" th:field="*{deadline}"><br>
+
+    <button type="submit">登録</button>
+</form>
+
+<a th:href="@{/admin/events}">戻る</a>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>試合結果入力</title>
+    <style>
+        body { font-family: sans-serif; padding: 30px; background-color: #f5f7fa; display: flex; justify-content: center; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { text-align: center; color: #333; }
+        .match-info { text-align: center; font-size: 1.2em; margin-bottom: 20px; font-weight: bold; color: #555; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        select, input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #e91e63; color: white; border: none; border-radius: 5px; font-weight: bold; margin-top: 25px; cursor: pointer; }
+        button:hover { background-color: #c2185b; }
+        .back-link { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>試合結果入力</h2>
+    
+    <div class="match-info">
+        <span th:text="${match.playerA}">選手A</span> vs <span th:text="${match.playerB}">選手B</span>
+    </div>
+
+    <form th:action="@{'/organizer/events/' + ${match.event.id} + '/matches/' + ${match.id} + '/update'}" method="post">
+        
+        <label>勝者を選択</label>
+        <select name="winner" required>
+            <option value="">-- 結果を選択してください --</option>
+            <option th:value="${match.playerA}" th:text="${match.playerA} + ' の勝ち'"></option>
+            <option th:value="${match.playerB}" th:text="${match.playerB} + ' の勝ち'"></option>
+        </select>
+
+        <label>スコア</label>
+        <textarea name="score" rows="5" placeholder="例:
+3-1
+11-8
+8-11
+11-9
+11-5" th:text="${match.score}"></textarea>
+
+        <button type="submit">結果を確定して次へ進める</button>
+    </form>
+
+    <a th:href="@{'/organizer/events/' + ${match.event.id} + '/bracket'}" class="back-link">キャンセル</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div>
+    <h1>大会一覧</h1>
+
+    <a th:href="@{/admin/events/new}">新規作成</a>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>大会名</th>
+            <th>日付</th>
+            <th>申込〆切</th>
+            <th>操作</th>
+        </tr>
+
+        <tr th:each="event : ${events}">
+            <td th:text="${event.id}"></td>
+            <td th:text="${event.name}"></td>
+            <td th:text="${event.date}"></td>
+            <td th:text="${event.deadline}"></td>
+            <td>
+                <a th:href="@{'/admin/events/' + ${event.id} + '/edit'}">編集</a>
+                <a th:href="@{'/admin/events/' + ${event.id} + '/detail'}">詳細</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

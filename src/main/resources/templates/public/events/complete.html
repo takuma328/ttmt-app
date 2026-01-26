@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申込完了 | 卓球大会管理</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .completion-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .success-icon::before {
+            content: "✓";
+            font-size: 3em;
+            color: white;
+            font-weight: bold;
+        }
+
+        .success-header h1 {
+            font-size: 2.2em;
+            color: #212529;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .success-header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .entry-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .entry-number-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .entry-number-value {
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            min-width: 120px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .members-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            animation: fadeInUp 0.7s ease;
+        }
+
+        .members-section h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .member-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .member-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .member-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .member-field-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+        .member-field-value {
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .notice-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            color: #0d47a1;
+            font-size: 0.95em;
+        }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+        @media (max-width: 600px) {
+            .member-info { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="completion-container">
+    <div class="success-header">
+        <div class="success-icon"></div>
+        <h1>申込が完了しました！</h1>
+        <p>大会へのエントリーを受け付けました。</p>
+    </div>
+
+    <div class="notice-box">
+        <strong>📧 確認メールについて</strong><br>
+        ご登録のアドレス宛に確認メールを送信しました。<br>
+        <span style="font-size:0.85em; color:#666;">（※開発環境のため実際には届かない場合があります）</span>
+    </div>
+
+    <div class="info-card">
+        <div class="entry-number">
+            <div class="entry-number-label">申込番号</div>
+            <div class="entry-number-value" th:text="${entry.id}">E-0000</div>
+        </div>
+
+        <div class="detail-row">
+            <div class="detail-label">大会名</div>
+            <div class="detail-value" th:text="${entry.event.name}">大会名</div>
+        </div>
+
+        <div class="detail-row">
+            <div class="detail-label">代表者名</div>
+            <div class="detail-value" th:text="${entry.contactName}">お名前</div>
+        </div>
+    </div>
+
+    <div class="members-section" th:if="${entry.members != null and !entry.members.isEmpty()}">
+        <h3>参加メンバー一覧</h3>
+        <div class="member-card" th:each="m, stat : ${entry.members}">
+            <div class="member-number" th:text="${stat.index + 1}">1</div>
+            <div class="member-info">
+                <div>
+                    <div class="member-field-label">氏名</div>
+                    <div class="member-field-value" th:text="${m.name}">氏名</div>
+                </div>
+                <div>
+                    <div class="member-field-label">性別</div>
+                    <div class="member-field-value" th:text="${m.gender}">性別</div>
+                </div>
+                <div>
+                    <div class="member-field-label">所属</div>
+                    <div class="member-field-value" th:text="${m.affiliation}">所属</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/events" class="btn btn-primary">大会一覧へ戻る</a>
+        <button onclick="window.print()" class="btn btn-secondary">この画面を印刷</button>
+    </div>
+</div>
+
+</body>
+</html>

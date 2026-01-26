@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ | 卓球大会管理</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background: #5a32a3; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .error { color: red; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>お問い合わせ</h2>
+    <p style="text-align:center; font-size:0.9em;">大会に関するご質問やご要望はこちらからお送りください。</p>
+    
+    <form th:action="@{/inquiry}" th:object="${inquiryForm}" method="post">
+        
+        <div>
+            <label>お名前</label>
+            <input type="text" th:field="*{name}" placeholder="お名前を入力">
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></p>
+        </div>
+
+        <div>
+            <label>メールアドレス</label>
+            <input type="text" th:field="*{email}" placeholder="example@email.com">
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></p>
+        </div>
+
+        <div>
+            <label>お問い合わせ内容</label>
+            <textarea th:field="*{content}" rows="6" placeholder="お問い合わせ内容を入力"></textarea>
+            <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error"></p>
+        </div>
+
+        <button type="submit">送信する</button>
+    </form>
+    
+    <a href="/" class="back-link">トップページへ戻る</a>
+</div>
+
+</body>
+</html>

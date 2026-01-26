@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>大会詳細（主催者）</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h2 { margin-bottom: 20px; color: #333; }
+
+        .detail-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            max-width: 600px;
+        }
+
+        .detail-box p { margin: 10px 0; color: #555; }
+        .detail-box span { font-weight: 600; color: #222; }
+
+        hr { border: none; border-top: 1px solid #ddd; margin: 25px 0; }
+
+        /* ボタン共通 */
+        button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: background 0.3s; }
+
+        /* 生成ボタン（オレンジ） */
+        .btn-generate {
+            padding: 12px 20px;
+            background-color: #e67e22;
+            color: #fff;
+            font-size: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .btn-generate:hover { background-color: #d35400; }
+
+        /* 公開ボタン（青） */
+        .btn-primary {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-primary:hover { background-color: #2980b9; }
+
+        /* 非公開ボタン（グレー） */
+        .btn-secondary {
+            padding: 10px 20px;
+            background-color: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover { background-color: #7f8c8d; }
+
+        .links a {
+            display: inline-block;
+            margin-top: 10px;
+            margin-right: 15px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .links a:hover { text-decoration: underline; }
+
+        /* 公開設定エリア */
+        .publish-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+<h2>大会詳細</h2>
+
+<div class="detail-box">
+    <p>大会名：<span th:text="${event.name}"></span></p>
+    <p>開催日：<span th:text="${event.date}"></span></p>
+    <p>種別：<span th:text="${event.type}"></span></p>
+    <p>締切：<span th:text="${#temporals.format(event.deadline, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <p>申込数：<span th:text="${entryCount}"></span></p>
+
+    <hr>
+
+    <form th:action="@{'/organizer/events/' + ${event.id} + '/generate'}" method="post">
+        <button type="submit" class="btn-generate"
+                onclick="return confirm('現在の組み合わせを削除して再生成します。よろしいですか？')">
+            試合組み合わせ生成
+        </button>
+    </form>
+    
+    <div style="margin-top: 10px;">
+        <a th:href="@{'/organizer/events/' + ${event.id} + '/bracket'}">👉 主催者用トーナメント表を確認</a>
+    </div>
+
+    <hr>
+
+    <div class="publish-section">
+        <h3 style="margin-top: 0; font-size: 1.1em; color: #555;">📢 公開設定</h3>
+        
+        <p th:if="${event.isBracketPublic}" style="color: #27ae60; font-weight: bold;">
+            状態：公開中（参加者が見られます）
+        </p>
+        <p th:unless="${event.isBracketPublic}" style="color: #c0392b; font-weight: bold;">
+            状態：非公開（主催者のみ見えます）
+        </p>
+
+        <form th:action="@{'/organizer/events/' + ${event.id} + '/publish-bracket'}" method="post">
+            <input type="hidden" name="publish" th:value="${!event.isBracketPublic}" />
+            
+            <button type="submit" 
+                    th:text="${event.isBracketPublic} ? '非公開にする' : '一般公開する'"
+                    th:class="${event.isBracketPublic} ? 'btn-secondary' : 'btn-primary'">
+            </button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div class="links">
+        <a th:href="@{'/organizer/events/' + ${event.id} + '/entries'}">参加者一覧</a>
+        <a th:href="@{'/organizer/events'}">一覧に戻る</a>
+    </div>
+</div>
+
+</body>
+</html>

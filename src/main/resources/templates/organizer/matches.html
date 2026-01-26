@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>トーナメント表</title>
+
+<style>
+.tournament {
+    display: flex;
+    gap: 80px; /* ラウンド間を広めに */
+    align-items: flex-start;
+}
+
+.round {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    position: relative; /* ★重要 */
+}
+
+.match {
+    position: relative; /* ★重要 */
+    border: 2px solid #333;
+    padding: 10px;
+    width: 160px;
+    background: #fff;
+}
+
+.player {
+    padding: 6px;
+    border-bottom: 1px solid #ccc;
+}
+
+.player:last-child {
+    border-bottom: none;
+}
+
+.winner {
+    font-weight: bold;
+    background: #e0ffe0;
+}
+
+/* === 次ラウンドへ伸びる横線 === */
+.match::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -40px;
+    width: 40px;
+    height: 2px;
+    background: #333;
+}
+
+/* === 2試合をまとめる縦線 === */
+.round:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: 40px;
+    width: 2px;
+    height: calc(100% - 40px);
+    background: #333;
+}
+</style>
+
+
+</head>
+<body>
+
+<h2 th:text="${event.name} + ' トーナメント表'"></h2>
+
+<div class="tournament">
+
+    <div class="round"
+         th:each="roundEntry : ${roundMap}">
+
+        <h3 th:text="'Round ' + ${roundEntry.key}"></h3>
+
+        <div class="match"
+             th:each="m : ${roundEntry.value}">
+
+            <div class="player"
+                 th:classappend="${m.winner == m.playerA} ? 'winner'">
+                <span th:text="${m.playerA}"></span>
+            </div>
+
+            <div class="player"
+                 th:classappend="${m.winner == m.playerB} ? 'winner'">
+                <span th:text="${m.playerB}"></span>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

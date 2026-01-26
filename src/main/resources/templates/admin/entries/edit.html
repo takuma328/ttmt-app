@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/base :: layout(~{::content})}"
+      lang="ja">
+
+<div th:fragment="content">
+
+    <h1>大会編集</h1>
+
+    <form method="post" th:action="@{'/admin/events/' + ${event.id}}">
+        <p>
+            大会名：
+            <input type="text" name="name" th:value="${event.name}">
+        </p>
+
+        <p>
+            種別：
+            <select name="type">
+                <option th:each="t : ${types}"
+                        th:value="${t}"
+                        th:selected="${t == event.type}"
+                        th:text="${t}">
+                </option>
+            </select>
+        </p>
+
+        <p>
+            容量：
+            <input type="number" name="capacity" th:value="${event.capacity}">
+        </p>
+
+        <p>
+  締切：
+  <input type="datetime-local" name="deadline"
+         th:value="${#temporals.format(event.deadline, 'yyyy-MM-dd''T''HH:mm')}" >
+</p>
+
+
+
+        <p>
+            状態：
+            <select name="status">
+                <option th:each="s : ${T(com.example.demo.domain.EventStatus).values()}"
+                        th:value="${s}"
+                        th:selected="${s == event.status}"
+                        th:text="${s}">
+                </option>
+            </select>
+        </p>
+
+        <button type="submit">更新</button>
+    </form>
+
+</div>
+
+</html>

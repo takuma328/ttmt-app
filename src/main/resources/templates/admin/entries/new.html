@@ -1,0 +1,51 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <title>代理申込</title>
+</head>
+<body>
+<h1>代理申込</h1>
+
+<form th:action="@{/admin/entries}" method="post" th:object="${form}">
+  <input type="hidden" th:field="*{eventId}"/>
+
+  <div>
+    代表者:
+    <input th:field="*{contactName}" placeholder="氏名"/>
+  </div>
+
+  <div>
+    メール:
+    <input th:field="*{contactEmail}" placeholder="メール"/>
+  </div>
+
+  <div>
+    電話:
+    <input th:field="*{phone}" placeholder="電話"/>
+  </div>
+
+  <div>
+    種別:
+    <select th:field="*{type}">
+      <option value="SINGLE">シングル</option>
+      <option value="DOUBLE">ダブルス</option>
+      <option value="TEAM">団体</option>
+    </select>
+  </div>
+
+  <div>
+    チーム名(任意):
+    <input th:field="*{teamName}" placeholder="チーム名"/>
+  </div>
+
+  <!-- メンバー (とりあえず3枠) -->
+  <div>メンバー1: <input th:field="*{member1}"/></div>
+  <div>メンバー2: <input th:field="*{member2}"/></div>
+  <div>メンバー3: <input th:field="*{member3}"/></div>
+
+  <button type="submit">登録</button>
+</form>
+
+</body>
+</html>

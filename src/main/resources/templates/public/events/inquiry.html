@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>大会へのお問い合わせ</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        input, textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;}
+        button { background: #6f42c1; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .error { color: red; font-size: 0.9em; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>お問い合わせ</h2>
+    <p>以下の大会に関する質問を入力してください。</p>
+    <p><strong>大会名：<span th:text="${event.name}"></span></strong></p>
+    <hr>
+
+    <form th:action="@{'/public/events/' + ${event.id} + '/inquiry'}" th:object="${inquiryForm}" method="post">
+        
+        <label>お名前</label>
+        <input type="text" th:field="*{name}" placeholder="お名前">
+        <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+
+        <label>メールアドレス</label>
+        <input type="text" th:field="*{email}" placeholder="返信先アドレス">
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+        <label>お問い合わせ内容</label>
+        <textarea th:field="*{content}" rows="5"></textarea>
+        <div class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+
+        <button type="submit">送信する</button>
+    </form>
+    
+    <div style="margin-top:20px;">
+        <a th:href="@{'/public/events/' + ${event.id} + '/detail'}">大会詳細へ戻る</a>
+    </div>
+</div>
+</body>
+</html>
