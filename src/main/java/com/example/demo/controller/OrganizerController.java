@@ -276,6 +276,37 @@ public class OrganizerController {
             matchRepo.save(nextMatch);
         }
     }
+    // ▼▼▼▼▼ ここから追加 ▼▼▼▼▼
+
+    // --- 主催者新規登録画面の表示 ---
+    @GetMapping("/signup")
+    public String signupForm(Model model) {
+        // フォーム用クラスを渡す（これがないとHTML側でエラーになります）
+        model.addAttribute("organizerSignupForm", new com.example.demo.dto.OrganizerSignupForm());
+        return "organizer/signup";
+    }
+
+    // --- 主催者登録処理（登録ボタンを押したとき） ---
+    @PostMapping("/signup")
+    public String signup(@Validated @ModelAttribute com.example.demo.dto.OrganizerSignupForm form,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return "organizer/signup";
+        }
+
+        Organizer org = new Organizer();
+        org.setName(form.getName());
+        org.setEmail(form.getEmail());
+        // パスワードを暗号化して保存
+        org.setPassword(new BCryptPasswordEncoder().encode(form.getPassword()));
+
+        organizerRepo.save(org);
+
+        // 登録できたらログイン画面へ
+        return "redirect:/organizer/login";
+    }
+
+    // ▲▲▲▲▲ ここまで追加 ▲▲▲▲▲
 
     // ★ processByes メソッドは完全に消しました。
 }
