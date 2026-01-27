@@ -19,7 +19,7 @@
 <body>
 <div class="card">
     <h2>主催者 新規登録</h2>
-    <form th:action="@{/organizer/signup}" th:object="${signupForm}" method="post">
+    <form th:action="@{/organizer/signup}" th:object="${organizerSignupForm}" method="post">
         <label>団体名</label>
         <input type="text" th:field="*{name}" placeholder="例：東京卓球クラブ">
         <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></div>
